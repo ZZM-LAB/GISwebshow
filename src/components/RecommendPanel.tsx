@@ -1,9 +1,11 @@
 /** 左侧推荐面板：位置选择+偏好场景+推荐结果 */
 import { useState } from "react";
-import { Search, Sparkles, ChevronRight, Star, AlertTriangle, TrendingUp } from "lucide-react";
+import { Search, Sparkles, ChevronRight, Star, AlertTriangle, TrendingUp, LocateFixed } from "lucide-react";
 import { useStore } from "@/store/useStore";
-import { SCENARIOS, DIM_LABELS } from "@/utils/types";
+import { SCENARIOS } from "@/utils/types";
 import { cities } from "@/utils/data";
+import { regeocode } from "@/utils/amap";
+import { wgs84ToGcj02 } from "@/utils/coordTransform";
 import type { Recommendation } from "@/utils/topsis";
 
 export default function RecommendPanel() {
@@ -18,6 +20,11 @@ export default function RecommendPanel() {
     runRecommend,
     selectPark,
     flyTo,
+    userLocation,
+    locating,
+    setUserLocation,
+    setLocating,
+    setCity: setStoreCity,
   } = useStore();
 
   const [showResults, setShowResults] = useState(false);
@@ -30,6 +37,32 @@ export default function RecommendPanel() {
   function handleResultClick(rec: Recommendation) {
     selectPark(rec.park);
     flyTo([rec.coords[1], rec.coords[0]]);
+  }
+
+  async function handleLocate() {
+    if (!navigator.geolocation) {
+      alert("您的浏览器不支持定位功能");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        // WGS84 → GCJ-02
+        const [lng, lat] = wgs84ToGcj02(pos.coords.longitude, pos.coords.latitude);
+        setUserLocation([lng, lat]);
+        setLocating(false);
+        // 逆地理编码获取城市
+        const result = await regeocode(lng, lat);
+        if (result?.city) {
+          setStoreCity(result.city);
+        }
+      },
+      (err) => {
+        setLocating(false);
+        alert(`定位失败：${err.message}`);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
   }
 
   return (
@@ -48,21 +81,38 @@ export default function RecommendPanel() {
         {/* 位置选择 */}
         <div className="mb-4">
           <label className="mb-1.5 block text-xs font-semibold text-wetland-700">
-            您所在的城市（可选）
+            您所在的位置
           </label>
-          <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <select
-              value={userCity}
-              onChange={(e) => setCity(e.target.value)}
-              className="w-full rounded-lg border border-wetland-200 bg-white py-2 pl-8 pr-3 text-sm text-wetland-800 focus:border-wetland-500 focus:outline-none focus:ring-1 focus:ring-wetland-500"
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <select
+                value={userCity}
+                onChange={(e) => setCity(e.target.value)}
+                className="w-full rounded-lg border border-wetland-200 bg-white py-2 pl-8 pr-3 text-sm text-wetland-800 focus:border-wetland-500 focus:outline-none focus:ring-1 focus:ring-wetland-500"
+              >
+                <option value="">不限（全省推荐）</option>
+                {cities.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              onClick={handleLocate}
+              disabled={locating}
+              title="自动定位我的位置"
+              className="flex shrink-0 items-center gap-1 rounded-lg border border-wetland-300 bg-white px-3 text-xs font-medium text-wetland-700 transition hover:bg-wetland-50 disabled:opacity-50"
             >
-              <option value="">不限（全省推荐）</option>
-              {cities.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
+              <LocateFixed size={14} className={locating ? "animate-spin" : ""} />
+              定位
+            </button>
           </div>
+          {userLocation && (
+            <p className="mt-1 text-xs text-wetland-500">
+              已定位：{userLocation[1].toFixed(4)}, {userLocation[0].toFixed(4)}
+              {userCity && ` · ${userCity}`}
+            </p>
+          )}
         </div>
 
         {/* 偏好场景 */}

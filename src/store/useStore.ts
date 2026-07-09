@@ -4,20 +4,32 @@ import type { ParkProperties } from "@/utils/types";
 import { SCENARIOS } from "@/utils/types";
 import { weightedTOPSIS, type Recommendation } from "@/utils/topsis";
 import { parks } from "@/utils/data";
+import type { DrivingRoute, WeatherInfo } from "@/utils/amap";
 
 type LayerMode = "topsis" | "type" | "hai";
 
 interface AppState {
   // 推荐面板状态
-  selectedScenarios: string[]; // 选中的场景key
-  userCity: string; // 用户城市
-  recommendations: Recommendation[]; // 推荐结果
-  topN: number; // 推荐数量
+  selectedScenarios: string[];
+  userCity: string;
+  recommendations: Recommendation[];
+  topN: number;
 
   // 地图状态
-  layerMode: LayerMode; // 图层模式
-  selectedPark: ParkProperties | null; // 当前选中公园（用于弹窗/高亮）
-  flyToCoords: [number, number] | null; // 地图飞行目标
+  layerMode: LayerMode;
+  selectedPark: ParkProperties | null;
+  flyToCoords: [number, number] | null;
+
+  // 用户定位
+  userLocation: [number, number] | null; // [lng, lat] GCJ-02
+  locating: boolean;
+
+  // 驾车路线
+  drivingRoute: DrivingRoute | null;
+  routeLoading: boolean;
+
+  // 天气
+  weather: WeatherInfo | null;
 
   // Actions
   toggleScenario: (key: string) => void;
@@ -28,6 +40,11 @@ interface AppState {
   selectPark: (park: ParkProperties | null) => void;
   flyTo: (coords: [number, number]) => void;
   clearFlyTo: () => void;
+  setUserLocation: (loc: [number, number] | null) => void;
+  setLocating: (v: boolean) => void;
+  setDrivingRoute: (r: DrivingRoute | null) => void;
+  setRouteLoading: (v: boolean) => void;
+  setWeather: (w: WeatherInfo | null) => void;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -39,6 +56,12 @@ export const useStore = create<AppState>((set, get) => ({
   layerMode: "topsis",
   selectedPark: null,
   flyToCoords: null,
+
+  userLocation: null,
+  locating: false,
+  drivingRoute: null,
+  routeLoading: false,
+  weather: null,
 
   toggleScenario: (key) => {
     const current = get().selectedScenarios;
@@ -55,14 +78,12 @@ export const useStore = create<AppState>((set, get) => ({
   runRecommend: () => {
     const { selectedScenarios, userCity, topN } = get();
     if (selectedScenarios.length === 0) {
-      // 无选择时使用均衡权重
       const balanced = SCENARIOS.find((s) => s.key === "balanced")!;
       const recs = weightedTOPSIS(parks, balanced.weights, undefined);
       set({ recommendations: recs.slice(0, topN) });
       return;
     }
 
-    // 多场景权重取平均
     const selectedScns = SCENARIOS.filter((s) => selectedScenarios.includes(s.key));
     const avgWeights = new Array(7).fill(0);
     for (const s of selectedScns) {
@@ -81,9 +102,15 @@ export const useStore = create<AppState>((set, get) => ({
 
   setLayerMode: (mode) => set({ layerMode: mode }),
 
-  selectPark: (park) => set({ selectedPark: park }),
+  selectPark: (park) => set({ selectedPark: park, drivingRoute: null, weather: null }),
 
   flyTo: (coords) => set({ flyToCoords: coords }),
 
   clearFlyTo: () => set({ flyToCoords: null }),
+
+  setUserLocation: (loc) => set({ userLocation: loc }),
+  setLocating: (v) => set({ locating: v }),
+  setDrivingRoute: (r) => set({ drivingRoute: r }),
+  setRouteLoading: (v) => set({ routeLoading: v }),
+  setWeather: (w) => set({ weather: w }),
 }));

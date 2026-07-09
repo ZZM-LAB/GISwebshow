@@ -1,6 +1,7 @@
-/** Leaflet地图组件：70公园点位+分级着色+点击选中 */
+/** Leaflet地图组件：70公园点位+分级着色+点击选中+驾车路线+用户定位 */
 import { useMemo } from "react";
-import { MapContainer, TileLayer, CircleMarker, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, CircleMarker, Polyline, Marker, Popup, useMap, useMapEvents } from "react-leaflet";
+import L from "leaflet";
 import { parks, HUNAN_CENTER, INITIAL_ZOOM } from "@/utils/data";
 import { useStore } from "@/store/useStore";
 import { getScoreLevel, getTypeColor, getHaiColor } from "@/utils/types";
@@ -83,6 +84,8 @@ export default function MapView() {
   const layerMode = useStore((s) => s.layerMode);
   const selectedPark = useStore((s) => s.selectedPark);
   const selectPark = useStore((s) => s.selectPark);
+  const drivingRoute = useStore((s) => s.drivingRoute);
+  const userLocation = useStore((s) => s.userLocation);
 
   /** 获取标记颜色 */
   function getMarkerColor(props: typeof parks[0]["properties"]): string {
@@ -145,6 +148,31 @@ export default function MapView() {
             />
           );
         })}
+
+        {/* 驾车路线绘制 */}
+        {drivingRoute && drivingRoute.polyline.length > 0 && (
+          <Polyline
+            positions={drivingRoute.polyline.map(([lng, lat]) => [lat, lng])}
+            pathOptions={{ color: "#d97706", weight: 4, opacity: 0.8, dashArray: "8 6" }}
+          />
+        )}
+
+        {/* 用户位置标记 */}
+        {userLocation && (
+          <Marker
+            position={[userLocation[1], userLocation[0]]}
+            icon={L.divIcon({
+              className: "user-location-marker",
+              html: '<div style="width:16px;height:16px;background:#2563eb;border:3px solid white;border-radius:50%;box-shadow:0 0 8px rgba(37,99,235,0.5);"></div>',
+              iconSize: [16, 16],
+              iconAnchor: [8, 8],
+            })}
+          >
+            <Popup>
+              <div className="text-xs">您的位置</div>
+            </Popup>
+          </Marker>
+        )}
 
         <FlyController />
       </MapContainer>
