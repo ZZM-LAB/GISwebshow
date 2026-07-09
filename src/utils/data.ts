@@ -1,20 +1,17 @@
-/** 数据加载：读取parks.json并转换为前端可用格式（WGS84→GCJ-02） */
+/** 数据加载：读取parks.json（坐标已是GCJ-02，来自高德API） */
 import type { ParkCollection, ParkFeature, ParkProperties } from "./types";
-import { wgs84ToGcj02 } from "./coordTransform";
 
 import parksData from "@/data/parks.json";
 
 const collection = parksData as ParkCollection;
 
-/** 所有公园列表（properties + coords，坐标已转为GCJ-02适配高德瓦片） */
+/** 所有公园列表（properties + coords）
+ *  坐标为GCJ-02（来自高德POI搜索API），直接适配高德瓦片 */
 export const parks: Array<{ properties: ParkProperties; coords: [number, number] }> =
-  collection.features.map((f: ParkFeature) => {
-    const [lng, lat] = wgs84ToGcj02(f.geometry.coordinates[0], f.geometry.coordinates[1]);
-    return {
-      properties: f.properties,
-      coords: [lng, lat] as [number, number],
-    };
-  });
+  collection.features.map((f: ParkFeature) => ({
+    properties: f.properties,
+    coords: [f.geometry.coordinates[0], f.geometry.coordinates[1]] as [number, number],
+  }));
 
 /** 按排名排序的公园 */
 export const parksByRank = [...parks].sort(
