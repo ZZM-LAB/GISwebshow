@@ -7,6 +7,7 @@ import { parks } from "@/utils/data";
 import type { DrivingRoute, WeatherInfo } from "@/utils/amap";
 
 type LayerMode = "topsis" | "type" | "hai";
+type BaseMap = "amap" | "satellite";
 
 interface AppState {
   // 推荐面板状态
@@ -17,8 +18,13 @@ interface AppState {
 
   // 地图状态
   layerMode: LayerMode;
+  baseMap: BaseMap;
   selectedPark: ParkProperties | null;
   flyToCoords: [number, number] | null;
+  // 新增：建园候选区图层显示开关（7-E1）
+  showCandidates: boolean;
+  // 新增：HAI高干扰预警显示开关（7-E4）
+  showHaiWarning: boolean;
 
   // 用户定位
   userLocation: [number, number] | null; // [lng, lat] GCJ-02
@@ -37,6 +43,7 @@ interface AppState {
   setTopN: (n: number) => void;
   runRecommend: () => void;
   setLayerMode: (mode: LayerMode) => void;
+  setBaseMap: (map: BaseMap) => void;
   selectPark: (park: ParkProperties | null) => void;
   flyTo: (coords: [number, number]) => void;
   clearFlyTo: () => void;
@@ -45,6 +52,8 @@ interface AppState {
   setDrivingRoute: (r: DrivingRoute | null) => void;
   setRouteLoading: (v: boolean) => void;
   setWeather: (w: WeatherInfo | null) => void;
+  setShowCandidates: (v: boolean) => void;
+  setShowHaiWarning: (v: boolean) => void;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -54,8 +63,11 @@ export const useStore = create<AppState>((set, get) => ({
   topN: 5,
 
   layerMode: "topsis",
+  baseMap: "amap",
   selectedPark: null,
   flyToCoords: null,
+  showCandidates: false,
+  showHaiWarning: true,
 
   userLocation: null,
   locating: false,
@@ -101,6 +113,7 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   setLayerMode: (mode) => set({ layerMode: mode }),
+  setBaseMap: (map) => set({ baseMap: map }),
 
   selectPark: (park) => set({ selectedPark: park, drivingRoute: null, weather: null }),
 
@@ -113,4 +126,6 @@ export const useStore = create<AppState>((set, get) => ({
   setDrivingRoute: (r) => set({ drivingRoute: r }),
   setRouteLoading: (v) => set({ routeLoading: v }),
   setWeather: (w) => set({ weather: w }),
+  setShowCandidates: (v) => set({ showCandidates: v }),
+  setShowHaiWarning: (v) => set({ showHaiWarning: v }),
 }));

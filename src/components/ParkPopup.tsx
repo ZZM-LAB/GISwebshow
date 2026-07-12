@@ -1,7 +1,9 @@
-/** 公园详情弹窗内容（用于Leaflet Popup和侧边详情） */
-import { MapPin, Calendar, Award, AlertCircle, Leaf } from "lucide-react";
+/** 公园详情弹窗内容（用于Leaflet Popup和侧边详情）
+ *  7-E2: 短板诊断面板（最弱维度 + 改善建议 + 水文适宜性）
+ */
+import { MapPin, Calendar, Award, AlertCircle, Leaf, Stethoscope, Droplets, Lightbulb } from "lucide-react";
 import type { ParkProperties } from "@/utils/types";
-import { getScoreLevel, getHaiColor } from "@/utils/types";
+import { getScoreLevel, getHaiColor, getHydroRiskColor, isHighHai } from "@/utils/types";
 import ParkRadarChart from "./RadarChart";
 
 interface ParkPopupProps {
@@ -11,6 +13,7 @@ interface ParkPopupProps {
 
 export default function ParkPopup({ park, onClose }: ParkPopupProps) {
   const level = getScoreLevel(park.topsis_score);
+  const highHai = isHighHai(park.hai_level);
 
   return (
     <div className="park-popup-card bg-white p-4">
@@ -43,6 +46,11 @@ export default function ParkPopup({ park, onClose }: ParkPopupProps) {
           <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-600">
             排名 #{park.topsis_rank}
           </span>
+          {highHai && (
+            <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700 ring-1 ring-red-300">
+              高干扰预警
+            </span>
+          )}
         </div>
       </div>
 
@@ -80,6 +88,66 @@ export default function ParkPopup({ park, onClose }: ParkPopupProps) {
       <div className="mb-3">
         <div className="mb-1 text-xs font-medium text-wetland-700">七维指标雷达图</div>
         <ParkRadarChart dims={park.dims} color={level.color} height={180} />
+      </div>
+
+      {/* 7-E2: 短板诊断面板 */}
+      <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50/60 p-2.5">
+        <div className="mb-1.5 flex items-center gap-1.5">
+          <Stethoscope size={13} className="text-amber-700" />
+          <span className="text-xs font-semibold text-amber-800">短板诊断</span>
+        </div>
+        <div className="mb-1.5 flex items-center justify-between text-xs">
+          <span className="text-gray-600">最弱维度</span>
+          <span className="rounded-full bg-amber-200 px-2 py-0.5 font-bold text-amber-900">
+            {park.weakest_dim}
+            {park.weakest_z !== null && (
+              <span className="ml-1 text-amber-700">(z={park.weakest_z})</span>
+            )}
+          </span>
+        </div>
+        <div className="flex items-start gap-1.5 rounded bg-white/70 p-1.5">
+          <Lightbulb size={12} className="mt-0.5 shrink-0 text-amber-600" />
+          <span className="text-[11px] leading-relaxed text-gray-700">
+            {park.improvement_suggestion}
+          </span>
+        </div>
+      </div>
+
+      {/* 7-S2: 水文适宜性（问题三） */}
+      <div className="mb-3 rounded-lg border border-blue-200 bg-blue-50/40 p-2.5">
+        <div className="mb-1.5 flex items-center gap-1.5">
+          <Droplets size={13} className="text-blue-700" />
+          <span className="text-xs font-semibold text-blue-800">水文适宜性</span>
+        </div>
+        <div className="grid grid-cols-2 gap-1.5 text-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-gray-600">水文得分</span>
+            <span className="font-serif font-bold text-blue-700">
+              {park.hydro_score.toFixed(3)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-600">水文排名</span>
+            <span className="font-serif font-bold text-blue-700">#{park.hydro_rank}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-600">变化趋势</span>
+            <span className="text-gray-700">{park.trend_type}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-600">变化幅度</span>
+            <span className="text-gray-700">{park.change_pct > 0 ? "+" : ""}{park.change_pct}%</span>
+          </div>
+        </div>
+        <div className="mt-1.5 flex items-center justify-between border-t border-blue-100 pt-1.5 text-xs">
+          <span className="text-gray-600">风险等级</span>
+          <span
+            className="rounded-full px-2 py-0.5 font-medium text-white"
+            style={{ backgroundColor: getHydroRiskColor(park.risk_level) }}
+          >
+            {park.risk_level}
+          </span>
+        </div>
       </div>
 
       {/* HAI压力标签 */}

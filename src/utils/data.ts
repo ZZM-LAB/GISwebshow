@@ -1,7 +1,9 @@
-/** 数据加载：读取parks.json（坐标已是GCJ-02，来自高德API） */
-import type { ParkCollection, ParkFeature, ParkProperties } from "./types";
+/** 数据加载：读取parks.json（坐标已是GCJ-02，来自高德API）+ candidates.json + equity.json */
+import type { ParkCollection, ParkFeature, ParkProperties, CandidateCollection, CandidateFeature, EquityData } from "./types";
 
 import parksData from "@/data/parks.json";
+import candidatesData from "@/data/candidates.json";
+import equityData from "@/data/equity.json";
 
 const collection = parksData as ParkCollection;
 
@@ -34,3 +36,10 @@ export const INITIAL_ZOOM = 7;
 export function findParkByName(name: string) {
   return parks.find((p) => p.properties.name === name);
 }
+
+/** 建园候选区列表（7-E1使用） */
+const candidatesCollection = candidatesData as unknown as CandidateCollection;
+export const candidates: CandidateFeature[] = candidatesCollection.features || [];
+
+/** 区域公平性看板数据（7-E3使用） */
+export const equity: EquityData = equityData as unknown as EquityData;

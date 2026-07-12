@@ -1,6 +1,6 @@
 /** 排名总览页 */
 import { Link } from "react-router-dom";
-import { Map, ArrowLeft, BarChart3 } from "lucide-react";
+import { Map, ArrowLeft, BarChart3, PieChart } from "lucide-react";
 import RankingTable from "@/components/RankingTable";
 
 export default function Ranking() {
@@ -27,6 +27,13 @@ export default function Ranking() {
             className="rounded-md bg-wetland-700 px-3 py-1.5 text-xs font-medium text-white"
           >
             排名总览
+          </Link>
+          <Link
+            to="/equity"
+            className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium text-wetland-200 transition hover:bg-wetland-700 hover:text-white"
+          >
+            <PieChart size={14} />
+            公平性看板
           </Link>
         </nav>
       </header>

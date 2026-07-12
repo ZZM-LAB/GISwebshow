@@ -1,6 +1,6 @@
 /** 地图主页：推荐面板 + 地图 */
 import { Link } from "react-router-dom";
-import { Map, BarChart3 } from "lucide-react";
+import { Map, BarChart3, PieChart } from "lucide-react";
 import RecommendPanel from "@/components/RecommendPanel";
 import MapView from "@/components/MapView";
 import LayerControl from "@/components/LayerControl";
@@ -30,6 +30,13 @@ export default function Home() {
           >
             <BarChart3 size={14} />
             排名总览
+          </Link>
+          <Link
+            to="/equity"
+            className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-medium text-wetland-200 transition hover:bg-wetland-700 hover:text-white"
+          >
+            <PieChart size={14} />
+            公平性看板
           </Link>
         </nav>
       </header>

@@ -23,6 +23,16 @@ export interface ParkProperties {
   season: string;
   dims: ParkDims;
   bias: string[];
+  // 新增：水文适宜性（问题三）
+  hydro_score: number;
+  hydro_rank: number;
+  trend_type: string;
+  change_pct: number;
+  risk_level: string;
+  // 新增：短板诊断（问题六）
+  weakest_dim: string;
+  weakest_z: number | null;
+  improvement_suggestion: string;
 }
 
 export interface ParkFeature {
@@ -100,12 +110,12 @@ export const SCENARIOS: Scenario[] = [
   },
 ];
 
-/** TOPSIS得分5级分级 */
+/** TOPSIS得分5级分级（基于四分位数） */
 export function getScoreLevel(score: number): { level: string; color: string; label: string } {
-  if (score >= 0.509) return { level: "I", color: "#1a5f4a", label: "高价值" };
-  if (score >= 0.443) return { level: "II", color: "#3d8869", label: "中高价值" };
-  if (score >= 0.357) return { level: "III", color: "#8dc4ac", label: "中等价值" };
-  if (score >= 0.280) return { level: "IV", color: "#f59e0b", label: "中低价值" };
+  if (score >= 0.5685) return { level: "I", color: "#1a5f4a", label: "高价值" };
+  if (score >= 0.4765) return { level: "II", color: "#3d8869", label: "中高价值" };
+  if (score >= 0.4148) return { level: "III", color: "#8dc4ac", label: "中等价值" };
+  if (score >= 0.3354) return { level: "IV", color: "#f59e0b", label: "中低价值" };
   return { level: "V", color: "#d97706", label: "低价值" };
 }
 
@@ -126,4 +136,68 @@ export function getHaiColor(level: string): string {
   if (level.includes("III级")) return "#f59e0b";
   if (level.includes("IV级")) return "#ef4444";
   return "#6b7280";
+}
+
+/** 是否为高干扰公园（HAI≥III级，用于7-E4预警） */
+export function isHighHai(level: string): boolean {
+  return level.includes("III级") || level.includes("IV级");
+}
+
+/** 水文风险等级颜色（用于7-S2水文展示） */
+export function getHydroRiskColor(risk: string): string {
+  if (risk.includes("高风险")) return "#ef4444";
+  if (risk.includes("中风险")) return "#f59e0b";
+  if (risk.includes("低风险")) return "#84cc16";
+  return "#22c55e"; // 无风险
+}
+
+/** 公平性看板：单个市州数据 */
+export interface EquityCity {
+  name: string;
+  population: number;
+  mean_distance_km: number;
+  median_distance_km: number;
+  max_distance_km: number;
+  blind_ratio: number;
+  blind_population: number;
+  access_per_km: number;
+  access_rank: number;
+}
+
+/** 公平性看板：汇总信息 */
+export interface EquitySummary {
+  total_parks: number;
+  total_blind_population: number;
+  avg_blind_ratio: number;
+  avg_access: number;
+  best_city: string;
+  worst_city: string;
+}
+
+/** 公平性看板：整体数据 */
+export interface EquityData {
+  cities: EquityCity[];
+  summary: EquitySummary;
+}
+
+/** 建园候选区GeoJSON Feature */
+export interface CandidateFeature {
+  type: "Feature";
+  geometry: {
+    type: "Polygon" | "MultiPolygon";
+    coordinates: number[][][] | number[][][][];
+  };
+  properties: {
+    area_km2?: number;
+    score?: number;
+    priority?: number;
+    name?: string;
+    [key: string]: unknown;
+  };
+}
+
+/** 建园候选区GeoJSON FeatureCollection */
+export interface CandidateCollection {
+  type: "FeatureCollection";
+  features: CandidateFeature[];
 }

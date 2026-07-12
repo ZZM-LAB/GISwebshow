@@ -1,0 +1,155 @@
+{
+  "cities": [
+    {
+      "name": "益阳市",
+      "population": 3853599,
+      "mean_distance_km": 19.91,
+      "median_distance_km": 19.24,
+      "max_distance_km": 47.02,
+      "blind_ratio": 0.0,
+      "blind_population": 0,
+      "access_per_km": 0.0502,
+      "access_rank": 1
+    },
+    {
+      "name": "永州市",
+      "population": 5286570,
+      "mean_distance_km": 23.36,
+      "median_distance_km": 22.42,
+      "max_distance_km": 66.02,
+      "blind_ratio": 0.017,
+      "blind_population": 89639,
+      "access_per_km": 0.0428,
+      "access_rank": 2
+    },
+    {
+      "name": "娄底市",
+      "population": 3822903,
+      "mean_distance_km": 23.61,
+      "median_distance_km": 23.97,
+      "max_distance_km": 54.49,
+      "blind_ratio": 0.0027,
+      "blind_population": 10231,
+      "access_per_km": 0.0423,
+      "access_rank": 3
+    },
+    {
+      "name": "常德市",
+      "population": 5269065,
+      "mean_distance_km": 24.09,
+      "median_distance_km": 21.18,
+      "max_distance_km": 83.15,
+      "blind_ratio": 0.0315,
+      "blind_population": 166166,
+      "access_per_km": 0.0415,
+      "access_rank": 4
+    },
+    {
+      "name": "岳阳市",
+      "population": 5063169,
+      "mean_distance_km": 24.16,
+      "median_distance_km": 22.3,
+      "max_distance_km": 60.63,
+      "blind_ratio": 0.0265,
+      "blind_population": 134323,
+      "access_per_km": 0.0414,
+      "access_rank": 5
+    },
+    {
+      "name": "邵阳市",
+      "population": 6555018,
+      "mean_distance_km": 25.18,
+      "median_distance_km": 23.97,
+      "max_distance_km": 66.29,
+      "blind_ratio": 0.114,
+      "blind_population": 747596,
+      "access_per_km": 0.0397,
+      "access_rank": 6
+    },
+    {
+      "name": "衡阳市",
+      "population": 6648029,
+      "mean_distance_km": 26.3,
+      "median_distance_km": 25.11,
+      "max_distance_km": 65.63,
+      "blind_ratio": 0.0303,
+      "blind_population": 201149,
+      "access_per_km": 0.038,
+      "access_rank": 7
+    },
+    {
+      "name": "湘西土家族苗族自治州",
+      "population": 2479756,
+      "mean_distance_km": 26.4,
+      "median_distance_km": 24.11,
+      "max_distance_km": 75.58,
+      "blind_ratio": 0.0711,
+      "blind_population": 176323,
+      "access_per_km": 0.0379,
+      "access_rank": 8
+    },
+    {
+      "name": "株洲市",
+      "population": 3905922,
+      "mean_distance_km": 26.66,
+      "median_distance_km": 26.43,
+      "max_distance_km": 59.06,
+      "blind_ratio": 0.0061,
+      "blind_population": 23745,
+      "access_per_km": 0.0375,
+      "access_rank": 9
+    },
+    {
+      "name": "长沙市",
+      "population": 10064862,
+      "mean_distance_km": 26.95,
+      "median_distance_km": 24.99,
+      "max_distance_km": 73.08,
+      "blind_ratio": 0.029,
+      "blind_population": 292244,
+      "access_per_km": 0.0371,
+      "access_rank": 10
+    },
+    {
+      "name": "湘潭市",
+      "population": 2744909,
+      "mean_distance_km": 31.58,
+      "median_distance_km": 32.03,
+      "max_distance_km": 54.7,
+      "blind_ratio": 0.0317,
+      "blind_population": 86949,
+      "access_per_km": 0.0317,
+      "access_rank": 11
+    },
+    {
+      "name": "郴州市",
+      "population": 4676803,
+      "mean_distance_km": 33.13,
+      "median_distance_km": 31.04,
+      "max_distance_km": 89.27,
+      "blind_ratio": 0.1274,
+      "blind_population": 595761,
+      "access_per_km": 0.0302,
+      "access_rank": 12
+    },
+    {
+      "name": "张家界市",
+      "population": 1510610,
+      "mean_distance_km": 57.44,
+      "median_distance_km": 59.77,
+      "max_distance_km": 90.47,
+      "blind_ratio": 0.6806,
+      "blind_population": 1028046,
+      "access_per_km": 0.0174,
+      "access_rank": 13
+    }
+  ],
+  "summary": {
+    "total_parks": 70,
+    "total_blind_population": 3552172,
+    "avg_blind_ratio": 0.0898,
+    "avg_access": 0.0375,
+    "best_city": "益阳市",
+    "worst_city": "张家界市"
+  }
+}

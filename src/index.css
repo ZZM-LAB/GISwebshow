@@ -70,3 +70,13 @@ body {
   fill: #164d3c;
   font-weight: 500;
 }
+
+/* 7-E4: 高干扰预警标识脉冲动画 */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.85; }
+}
+
+.hai-warning-marker {
+  pointer-events: none;
+}
